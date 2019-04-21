@@ -1,0 +1,135 @@
+
+
+<!DOCTYPE html>
+<html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<h1 style="text-align: center;"><span style="color: #00ff00;">Please choose from one of the following options:</span></h1>
+<p>
+</p>
+<h2>
+Create document in database&nbsp;
+</h2>
+<form id="create">
+Id:<br /> <input type="text" name="id" /><br /> Certificate Number:<br /> <input type="text" name="certificate_number" /> <br /> Business Name:<br /> <input type="text" name="business_name" /><br /> Date: <br /> <input type="text" name="date" /> <br /> Result:<br /> <input type="text" name="result" /><br />Sector:<br /> <input type="text" name="sector" /><br /> <strong>Address:</strong><br /> City:<br /> <input type="text" name="city" /><br /> Zip Code:<br /> <input type="text" name="zip" /><br /> Street:<br /> <input type="text" name="street" /><br /> Number:<br /> <input type="text" name="number" />
+</form>
+<p>
+<br />
+<button type="submit" form="nameform" value="Submit" onclick="buildRequest('create')">Submit</button>
+</p>
+<p id="create_result"></p>
+<h2>
+Remove Document From Database: &nbsp;
+</h2>
+<form id="delete">
+Column name:<br /> <input type="text" name="remove_column" /><br /> Value:<br /> <input type="text" name="remove_value" />
+</form>
+<p>
+<br /> <button type="submit" form="nameform" value="Submit" onclick="deleteRequest()">Submit
+</button>
+</p>
+<p id="delete_result"></p>
+<h2>
+Update document:
+</h2>
+<form id="update">
+With column name:<br /> <input type="text" name="column" /><br /> And value:<br /> <input type="text" name="searchvalue" /><br />Id:<br /> <input type="text" name="id" /><br /> Certificate Number:<br /> <input type="text" name="certificate_number" /> <br /> Business Name:<br /> <input type="text" name="business_name" /><br /> Date: <br /> <input type="text" name="date" /> <br /> Result:<br /> <input type="text" name="result" /><br />Sector:<br /> <input type="text" name="sector" /><br /> <strong>Address:</strong><br /> City:<br /> <input type="text" name="city" /><br /> Zip Code:<br /> <input type="text" name="zip" /><br /> Street:<br /> <input type="text" name="street" /><br /> Number:<br /> <input type="text" name="number" />
+</form>
+<p>
+<br /> <button type="submit" form="nameform" value="Submit" onclick="buildRequest('update')">Submit
+</button>
+</p>
+<p id="update_result"></p>
+<h2>
+<em><strong>Find document:</strong></em>
+</h2>
+<form id="get_search">
+With column name:<br /> <input type="text" name="find_column" /><br /> And value:<br /> <input type="text" name="find_value" /><br /> Sort by value:<br /> <input type="text" name="sort_value" />
+</form>
+<p>
+<br /> <button type="submit" form="nameform" value="Submit" onclick="searchRequest()">Submit
+</button>
+</p>
+<p id="get_search_result"></p>
+<script>
+function buildRequest(form_id){
+    var url = "http://54.39.40.227:8080/" + form_id + "?";
+    var elements = document.getElementById(form_id);
+
+    for (var i = 0, element; element = elements[i++];) {
+        if (element.value.length > 0){
+            if (i > 1){
+               url += "&"
+            }
+            url += element.getAttribute('name') + '="' + element.value + '"';
+        }
+    }
+    
+    if (form_id == "create") {
+        request_type = "POST"
+    } else {
+        request_type = "GET"
+    }
+
+    var result_tag = form_id + "_result";
+
+         $.ajax({
+        url: url,
+        dataType: "json",
+        method: request_type,
+        success : function(response) {
+        document.getElementById(result_tag).innerHTML = JSON.stringify(response);
+        },
+        error: function(xhr, status, error) {
+         document.getElementById(result_tag).innerHTML = xhr.responseText;
+        }         
+    });
+
+}
+
+function deleteRequest(){
+    var column_name = document.getElementById("delete").elements["remove_column"].value;
+    var column_value = document.getElementById("delete").elements["remove_value"].value;
+    var url = "http://54.39.40.227:8080/delete?" + column_name + "=\"" + column_value +
+        "\"";
+
+          $.ajax({
+        url: url,
+        dataType: "json",
+        method: "GET",
+        success : function(response) {
+          document.getElementById("delete_result").innerHTML = JSON.stringify(response);
+        },
+        error: function(xhr, status, error) {
+         document.getElementById("delete_result").innerHTML = xhr.responseText;
+        }
+      });
+
+}
+
+function searchRequest(){
+    var find_column = document.getElementById("get_search").elements["find_column"].value;
+    var find_value = document.getElementById("get_search").elements["find_value"].value;
+    var sort_value = document.getElementById("get_search").elements["sort_value"].value;
+    var url = "http://54.39.40.227:8080/search?" + find_column + "=\"" + find_value +
+        "\"&sort_value=\"" + sort_value + "\"";
+
+      $.ajax({
+        url: url,
+        dataType: "json",
+        method: "GET",
+        success : function(response) {
+          document.getElementById("get_search_result").innerHTML = JSON.stringify(response);
+        },
+        error: function(xhr, status, error) {
+         document.getElementById("get_search_result").innerHTML = xhr.responseText;
+        }
+
+      });
+
+    
+}
+
+</script>
+</html>
+
+
